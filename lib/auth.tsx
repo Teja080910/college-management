@@ -10,6 +10,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null
+  loading: boolean
   login: (username: string, password: string) => { success: boolean }
   logout: () => void
   isAuthenticated: boolean
@@ -24,6 +25,7 @@ const AUTH_DATA = {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const raw = localStorage.getItem('portal_user')
@@ -31,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (raw && token) {
       setUser(JSON.parse(raw))
     }
+    setLoading(false)
   }, [])
 
   const login = useCallback((username: string, password: string) => {
@@ -51,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   )

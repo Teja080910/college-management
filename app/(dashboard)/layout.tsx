@@ -13,10 +13,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
 
   useEffect(() => {
-    if (ctx && !ctx.isAuthenticated) router.replace('/login')
+    if (ctx && !ctx.loading && !ctx.isAuthenticated) router.replace('/login')
   }, [ctx, router])
 
-  if (!ctx?.isAuthenticated) return null
+  if (!ctx || ctx.loading) return null
+  if (!ctx.isAuthenticated) return null
 
   return (
     <SidebarProvider>

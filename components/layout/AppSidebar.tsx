@@ -57,12 +57,12 @@ export default function AppSidebar({ user, onLogout }: { user: { name?: string; 
                 const Icon = item.icon
                 const isActive = pathname === item.path
                 return (
-                  <SidebarMenuItem key={item.path}>
+                  <SidebarMenuItem key={item.path} className="mb-0.5">
                     <SidebarMenuButton
                       tooltip={item.label}
                       render={<Link href={item.path} />}
                       isActive={isActive}
-                      className={`group/sidebar-item ${isActive ? 'bg-primary/10 text-primary font-medium shadow-sm' : ''}`}
+                      className={`group/sidebar-item transition-all duration-200 hover:!bg-primary/10 hover:!text-primary [&>svg]:hover:!text-primary ${isActive ? '!bg-primary/10 !text-primary font-medium shadow-sm [&>svg]:!text-primary' : ''}`}
                     >
                       <Icon className="size-4 shrink-0" />
                       <span className="flex-1">{item.label}</span>

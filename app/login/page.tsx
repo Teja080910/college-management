@@ -20,6 +20,13 @@ export default function LoginPage() {
 
   useEffect(() => { setLoaded(true) }, [])
 
+  useEffect(() => {
+    if (ctx && !ctx.loading && ctx.isAuthenticated) router.replace('/dashboard')
+  }, [ctx, router])
+
+  if (ctx?.loading) return null
+  if (ctx?.isAuthenticated) return null
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
