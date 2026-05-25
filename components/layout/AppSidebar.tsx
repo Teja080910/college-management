@@ -57,7 +57,7 @@ export default function AppSidebar({ user, onLogout }: { user: { name?: string; 
                 const Icon = item.icon
                 const isActive = pathname === item.path
                 return (
-                  <SidebarMenuItem key={item.path} className="mb-0.5">
+                  <SidebarMenuItem key={item.path} className="mb-0.5 mt-0.5">
                     <SidebarMenuButton
                       tooltip={item.label}
                       render={<Link href={item.path} />}
