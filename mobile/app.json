@@ -23,6 +23,7 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "adjustResize",
       "package": "com.studentportal.app"
     },
     "web": {

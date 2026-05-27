@@ -29,9 +29,9 @@
     "web": "expo start --web",
     "prebuild": "npx expo prebuild --platform android --clean",
     "gradle:apk": "cd android && ./gradlew assembleRelease",
-    "apk": "npx expo prebuild --platform android --clean && cd android && ./gradlew assembleRelease",
+    "apk": "npx expo prebuild --platform android --clean && cd android && ANDROID_HOME=$HOME/Android/Sdk ./gradlew assembleRelease",
     "apk:dev": "npx expo run:android",
-    "apk:fast": "cd android && ./gradlew assembleRelease",
+    "apk:fast": "cd android && ANDROID_HOME=$HOME/Android/Sdk ./gradlew assembleRelease",
     "clean": "rm -rf android ios && npx expo start --clear"
   },
   "private": true,

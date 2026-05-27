@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, Pressable } from 'react-native'
+import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable } from 'react-native'
 import { Text, Card, Button, TextInput, Chip } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
@@ -130,59 +130,33 @@ export default function FeesScreen() {
         </Card>
       </ScrollView>
 
-      <Modal visible={dialogOpen} transparent animationType="slide" onRequestClose={() => setDialogOpen(false)}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-          <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }} onPress={() => setDialogOpen(false)}>
-            <Pressable onPress={() => {}} style={{
-              backgroundColor: '#ffffff',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              paddingTop: 8,
-              paddingBottom: insets.bottom + 16,
-              maxHeight: '80%',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: -4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 16,
-              elevation: 20,
-            }}>
-              <View style={{ width: 36, height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, alignSelf: 'center', marginBottom: 4 }} />
-              <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: 400 }}>
-                <View style={{ paddingHorizontal: 24, paddingTop: 12 }}>
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#1e293b', marginBottom: 4 }}>
-                    {editing ? 'Edit Fee Record' : 'New Fee Record'}
-                  </Text>
-                  <Text style={{ fontSize: 14, color: '#64748b', marginBottom: 20 }}>
-                    {editing ? 'Update the fee details below.' : 'Enter the fee details for a student.'}
-                  </Text>
-
-                  <TextInput label="Student name" value={form.studentName} onChangeText={t => setForm({ ...form, studentName: t })}
-                    mode="outlined" style={{ marginBottom: 12, backgroundColor: '#f8fafc' }}
-                    outlineStyle={{ borderRadius: 10, borderColor: '#e2e8f0' }} activeOutlineColor="#6366f1" />
-                  <View style={{ flexDirection: 'row', gap: 10 }}>
-                    <TextInput label="Total fees (₹)" value={form.totalFees} onChangeText={t => setForm({ ...form, totalFees: t })}
-                      mode="outlined" keyboardType="numeric" style={{ marginBottom: 12, flex: 1, backgroundColor: '#f8fafc' }}
-                      outlineStyle={{ borderRadius: 10, borderColor: '#e2e8f0' }} activeOutlineColor="#6366f1" />
-                    <TextInput label="Paid (₹)" value={form.paid} onChangeText={t => setForm({ ...form, paid: t })}
-                      mode="outlined" keyboardType="numeric" style={{ marginBottom: 12, flex: 1, backgroundColor: '#f8fafc' }}
-                      outlineStyle={{ borderRadius: 10, borderColor: '#e2e8f0' }} activeOutlineColor="#6366f1" />
-                  </View>
-
-                  <View style={{ flexDirection: 'row', gap: 10, paddingTop: 4, borderTopWidth: 1, borderTopColor: '#f1f5f9', paddingBottom: 8 }}>
-                    <Button mode="outlined" onPress={() => setDialogOpen(false)}
-                      style={{ flex: 1, borderRadius: 10, borderColor: '#e2e8f0' }} textColor="#64748b">
-                      Cancel
-                    </Button>
-                    <Button mode="contained" onPress={handleSave} loading={saving} disabled={saving}
-                      style={{ flex: 1, borderRadius: 10 }} buttonColor="#6366f1">
-                      {editing ? 'Update' : 'Create'}
-                    </Button>
-                  </View>
+      <Modal visible={dialogOpen} transparent animationType="fade" onRequestClose={() => setDialogOpen(false)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
+          <Pressable style={{ flex: 1 }} onPress={() => setDialogOpen(false)} />
+          <View style={{ backgroundColor: '#ffffff', borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 10, maxHeight: '85%' }}>
+            <View style={{ width: 40, height: 5, backgroundColor: '#d4d4d8', borderRadius: 3, alignSelf: 'center', marginBottom: 4 }} />
+            <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: 400 }}>
+              <View style={{ paddingHorizontal: 24, paddingTop: 12, paddingBottom: insets.bottom + 16 }}>
+                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1e293b', marginBottom: 4 }}>{editing ? 'Edit Fee Record' : 'New Fee Record'}</Text>
+                <Text style={{ fontSize: 14, color: '#64748b', marginBottom: 20 }}>{editing ? 'Update the fee details below.' : 'Enter the fee details for a student.'}</Text>
+                <TextInput label="Student name" value={form.studentName} onChangeText={t => setForm({ ...form, studentName: t })} mode="outlined"
+                  style={{ marginBottom: 12, backgroundColor: '#f8fafc' }} outlineStyle={{ borderRadius: 10, borderColor: '#e2e8f0' }} activeOutlineColor="#6366f1" />
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TextInput label="Total fees (₹)" value={form.totalFees} onChangeText={t => setForm({ ...form, totalFees: t })} mode="outlined" keyboardType="numeric"
+                    style={{ marginBottom: 12, flex: 1, backgroundColor: '#f8fafc' }} outlineStyle={{ borderRadius: 10, borderColor: '#e2e8f0' }} activeOutlineColor="#6366f1" />
+                  <TextInput label="Paid (₹)" value={form.paid} onChangeText={t => setForm({ ...form, paid: t })} mode="outlined" keyboardType="numeric"
+                    style={{ marginBottom: 12, flex: 1, backgroundColor: '#f8fafc' }} outlineStyle={{ borderRadius: 10, borderColor: '#e2e8f0' }} activeOutlineColor="#6366f1" />
                 </View>
-              </ScrollView>
-            </Pressable>
-          </Pressable>
-        </KeyboardAvoidingView>
+                <View style={{ flexDirection: 'row', gap: 10, paddingTop: 4, borderTopWidth: 1, borderTopColor: '#f1f5f9' }}>
+                  <Button mode="outlined" onPress={() => setDialogOpen(false)}
+                    style={{ flex: 1, borderRadius: 10, borderColor: '#e2e8f0' }} textColor="#64748b">Cancel</Button>
+                  <Button mode="contained" onPress={handleSave} loading={saving} disabled={saving}
+                    style={{ flex: 1, borderRadius: 10 }} buttonColor="#6366f1">{editing ? 'Update' : 'Create'}</Button>
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
       </Modal>
     </View>
   )
