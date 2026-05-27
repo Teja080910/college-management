@@ -1,0 +1,17 @@
+export interface Test {
+  id: number
+  title: string
+  course: string
+  date: string
+  time: string
+  venue: string
+}
+
+export const defaultTests: Test[] = [
+  { id: 1, title: "Midterm - Mathematics", course: "Mathematics", date: "2026-06-15", time: "10:00 - 12:00", venue: "Hall A" },
+  { id: 2, title: "Midterm - Physics", course: "Physics", date: "2026-06-17", time: "10:00 - 12:00", venue: "Hall B" },
+  { id: 3, title: "Midterm - Chemistry", course: "Chemistry", date: "2026-06-19", time: "14:00 - 16:00", venue: "Lab 1" },
+  { id: 4, title: "Final - Computer Science", course: "Computer Science", date: "2026-07-05", time: "09:00 - 12:00", venue: "Lab 2" },
+  { id: 5, title: "Final - Mathematics", course: "Mathematics", date: "2026-07-07", time: "09:00 - 12:00", venue: "Hall A" },
+  { id: 6, title: "Final - Physics", course: "Physics", date: "2026-07-09", time: "09:00 - 12:00", venue: "Hall B" },
+]
