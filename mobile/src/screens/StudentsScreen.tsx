@@ -57,16 +57,19 @@ export default function StudentsScreen() {
         <Text style={{ fontSize: 24, fontWeight: '700', color: '#1e293b', marginBottom: 4 }}>Students</Text>
         <Text style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Manage all registered students</Text>
 
-        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
-          <Searchbar
-            placeholder="Search by name or email..."
-            value={search}
-            onChangeText={setSearch}
-            style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 12, height: 44 }}
-            inputStyle={{ fontSize: 14 }}
-          />
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16, alignItems: 'center' }}>
+          <View style={{ flex: 1, height: 44, justifyContent: 'center' }}>
+            <Searchbar
+              placeholder="Search by name or email..."
+              value={search}
+              onChangeText={setSearch}
+              style={{ backgroundColor: '#ffffff', borderRadius: 12, height: 44 }}
+              inputStyle={{ fontSize: 14, minHeight: 0 }}
+            />
+          </View>
           <Button mode="contained" onPress={openAdd} buttonColor="#6366f1" contentStyle={{ height: 44 }}
-            style={{ borderRadius: 12 }} icon={() => <MaterialCommunityIcons name="plus" size={18} color="#fff" />}>
+            style={{ borderRadius: 12, height: 44 }} labelStyle={{ fontSize: 14, marginVertical: 0 }}
+            icon={() => <MaterialCommunityIcons name="plus" size={18} color="#fff" />}>
             Add
           </Button>
         </View>
