@@ -1,0 +1,9 @@
+import 'package:flutter_mobile/models/student.dart';
+
+final List<Student> defaultStudents = [
+  Student(id: 1, name: "Alice Johnson", age: 20, grade: "A", email: "alice@example.com", phone: "555-0101", enrolled: true),
+  Student(id: 2, name: "Bob Smith", age: 22, grade: "B+", email: "bob@example.com", phone: "555-0102", enrolled: true),
+  Student(id: 3, name: "Carol White", age: 19, grade: "A-", email: "carol@example.com", phone: "555-0103", enrolled: true),
+  Student(id: 4, name: "David Brown", age: 21, grade: "B", email: "david@example.com", phone: "555-0104", enrolled: false),
+  Student(id: 5, name: "Eve Davis", age: 23, grade: "A+", email: "eve@example.com", phone: "555-0105", enrolled: true),
+];

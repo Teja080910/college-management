@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable } from 'react-native'
+import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable, KeyboardAvoidingView, Platform } from 'react-native'
 import { Text, Card, Button, TextInput, Chip, Searchbar } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
@@ -96,11 +96,12 @@ export default function StudentsScreen() {
       </ScrollView>
 
       <Modal visible={dialogOpen} transparent animationType="fade" onRequestClose={() => setDialogOpen(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
-          <Pressable style={{ flex: 1 }} onPress={() => setDialogOpen(false)} />
-          <View style={{ backgroundColor: '#ffffff', borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 10, maxHeight: '90%' }}>
-            <View style={{ width: 40, height: 5, backgroundColor: '#d4d4d8', borderRadius: 3, alignSelf: 'center', marginBottom: 4 }} />
-            <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: 500 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
+            <Pressable style={{ flex: 1 }} onPress={() => setDialogOpen(false)} />
+            <View style={{ backgroundColor: '#ffffff', borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 10, maxHeight: '90%' }}>
+              <View style={{ width: 40, height: 5, backgroundColor: '#d4d4d8', borderRadius: 3, alignSelf: 'center', marginBottom: 4 }} />
+              <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
               <View style={{ paddingHorizontal: 24, paddingTop: 12, paddingBottom: insets.bottom + 16 }}>
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1e293b', marginBottom: 4 }}>{editing ? 'Edit Student' : 'New Student'}</Text>
                 <Text style={{ fontSize: 14, color: '#64748b', marginBottom: 20 }}>{editing ? 'Update the student details below.' : 'Fill in the details to register a new student.'}</Text>
@@ -133,7 +134,8 @@ export default function StudentsScreen() {
             </ScrollView>
           </View>
         </View>
-      </Modal>
+      </KeyboardAvoidingView>
+    </Modal>
     </View>
   )
 }
