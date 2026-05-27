@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react'
-import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable, KeyboardAvoidingView, Platform } from 'react-native'
+import React, { useState, useCallback, useEffect } from 'react'
+import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable, Keyboard } from 'react-native'
 import { Text, Card, Button, TextInput, Chip, Searchbar } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
@@ -17,6 +17,13 @@ export default function StudentsScreen() {
   const [form, setForm] = useState({ name: '', age: '', grade: '', email: '', phone: '', enrolled: true })
   const [saving, setSaving] = useState(false)
   const insets = useSafeAreaInsets()
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', (e) => setKeyboardHeight(e.endCoordinates.height))
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardHeight(0))
+    return () => { showSub.remove(); hideSub.remove() }
+  }, [])
 
   const load = async () => setStudents(await getStudents())
   useFocusEffect(useCallback(() => { load() }, []))
@@ -96,13 +103,12 @@ export default function StudentsScreen() {
       </ScrollView>
 
       <Modal visible={dialogOpen} transparent animationType="fade" onRequestClose={() => setDialogOpen(false)}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
-            <Pressable style={{ flex: 1 }} onPress={() => setDialogOpen(false)} />
-            <View style={{ backgroundColor: '#ffffff', borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 10, maxHeight: '90%' }}>
-              <View style={{ width: 40, height: 5, backgroundColor: '#d4d4d8', borderRadius: 3, alignSelf: 'center', marginBottom: 4 }} />
-              <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
-              <View style={{ paddingHorizontal: 24, paddingTop: 12, paddingBottom: insets.bottom + 16 }}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
+          <Pressable style={{ flex: 1 }} onPress={() => setDialogOpen(false)} />
+          <View style={{ backgroundColor: '#ffffff', borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 10, maxHeight: '90%' }}>
+            <View style={{ width: 40, height: 5, backgroundColor: '#d4d4d8', borderRadius: 3, alignSelf: 'center', marginBottom: 4 }} />
+            <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: 500 }}>
+              <View style={{ paddingHorizontal: 24, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16) + keyboardHeight }}>
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1e293b', marginBottom: 4 }}>{editing ? 'Edit Student' : 'New Student'}</Text>
                 <Text style={{ fontSize: 14, color: '#64748b', marginBottom: 20 }}>{editing ? 'Update the student details below.' : 'Fill in the details to register a new student.'}</Text>
                 <TextInput label="Full name" value={form.name} onChangeText={t => setForm({ ...form, name: t })} mode="outlined"
@@ -134,8 +140,7 @@ export default function StudentsScreen() {
             </ScrollView>
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </Modal>
+      </Modal>
     </View>
   )
 }

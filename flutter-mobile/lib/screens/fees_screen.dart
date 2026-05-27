@@ -248,8 +248,10 @@ class _FeesScreenState extends State<FeesScreen> {
       ),
       bottomSheet: _dialogOpen
           ? Container(
+              color: Colors.white,
               padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
               child: BottomSheet(
+                backgroundColor: Colors.white,
                 onClosing: () => setState(() => _dialogOpen = false),
                 enableDrag: false,
                 shape: const RoundedRectangleBorder(

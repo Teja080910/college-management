@@ -26,78 +26,67 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-class MainTabs extends StatelessWidget {
+class MainTabs extends StatefulWidget {
   const MainTabs({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 6,
-      child: Scaffold(
-        body: TabBarView(
-          children: const [
-            DashboardScreen(),
-            StudentsScreen(),
-            FeesScreen(),
-            TimetableScreen(),
-            CoursesScreen(),
-            TestsScreen(),
-          ],
-        ),
-        bottomNavigationBar: Consumer<AuthProvider>(
-          builder: (ctx, auth, _) => Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6366f1).withOpacity(0.12),
-                  blurRadius: 16,
-                  offset: const Offset(0, -6),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: TabBar(
-                indicatorColor: Colors.transparent,
-                labelColor: const Color(0xFF6366f1),
-                unselectedLabelColor: const Color(0xFF94a3b8),
-                labelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.3),
-                unselectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.3),
-                tabs: const [
-                  _TabItem(icon: Icons.dashboard, label: 'Dashboard'),
-                  _TabItem(icon: Icons.group, label: 'Students'),
-                  _TabItem(icon: Icons.currency_rupee, label: 'Fees'),
-                  _TabItem(icon: Icons.calendar_month, label: 'Timetable'),
-                  _TabItem(icon: Icons.menu_book, label: 'Courses'),
-                  _TabItem(icon: Icons.assignment, label: 'Tests'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  State<MainTabs> createState() => _MainTabsState();
 }
 
-class _TabItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
+class _MainTabsState extends State<MainTabs> {
+  int _selectedIndex = 0;
 
-  const _TabItem({required this.icon, required this.label});
+  static const _screens = <Widget>[
+    DashboardScreen(),
+    StudentsScreen(),
+    FeesScreen(),
+    TimetableScreen(),
+    CoursesScreen(),
+    TestsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Tab(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 8),
-          Icon(icon, size: 22),
-          SizedBox(height: 2),
-          Text(label, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 4),
-        ],
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366f1).withOpacity(0.12),
+              blurRadius: 16,
+              offset: const Offset(0, -6),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: (i) => setState(() => _selectedIndex = i),
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.transparent,
+              selectedItemColor: const Color(0xFF6366f1),
+              unselectedItemColor: const Color(0xFF94a3b8),
+              selectedFontSize: 11,
+              unselectedFontSize: 11,
+              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
+              iconSize: 26,
+              elevation: 0,
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), activeIcon: Icon(Icons.dashboard), label: 'Dashboard'),
+                BottomNavigationBarItem(icon: Icon(Icons.group_outlined), activeIcon: Icon(Icons.group), label: 'Students'),
+                BottomNavigationBarItem(icon: Icon(Icons.currency_rupee_outlined), activeIcon: Icon(Icons.currency_rupee), label: 'Fees'),
+                BottomNavigationBarItem(icon: Icon(Icons.calendar_month_outlined), activeIcon: Icon(Icons.calendar_month), label: 'Timetable'),
+                BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), activeIcon: Icon(Icons.menu_book), label: 'Courses'),
+                BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), activeIcon: Icon(Icons.assignment), label: 'Tests'),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

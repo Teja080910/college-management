@@ -72,10 +72,11 @@ class _LoginScreenState extends State<LoginScreen>
       backgroundColor: const Color(0xFFf8fafc),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: FadeTransition(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
+              child: FadeTransition(
                 opacity: _fadeAnim,
                 child: SlideTransition(
                   position: _slideAnim,
@@ -109,29 +110,12 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ],
                               ),
-                              child: const Icon(
-                                Icons.school,
-                                color: Colors.white,
-                                size: 34,
-                              ),
+                              child: const Icon(Icons.school, color: Colors.white, size: 34),
                             ),
                             const SizedBox(height: 20),
-                            const Text(
-                              'Welcome back',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF1e293b),
-                              ),
-                            ),
+                            const Text('Welcome back', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF1e293b))),
                             const SizedBox(height: 6),
-                            const Text(
-                              'Sign in to your student portal',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF64748b),
-                              ),
-                            ),
+                            const Text('Sign in to your student portal', style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),
                             const SizedBox(height: 32),
                             if (_error.isNotEmpty)
                               Container(
@@ -143,13 +127,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(color: const Color(0xFFfecaca)),
                                 ),
-                                child: const Text(
-                                  'Invalid credentials. Try admin/admin.',
-                                  style: TextStyle(
-                                    color: Color(0xFFdc2626),
-                                    fontSize: 14,
-                                  ),
-                                ),
+                                child: const Text('Invalid credentials. Try admin/admin.',
+                                    style: TextStyle(color: Color(0xFFdc2626), fontSize: 14)),
                               ),
                             TextFormField(
                               controller: _usernameController,
@@ -158,22 +137,12 @@ class _LoginScreenState extends State<LoginScreen>
                                 hintText: 'admin',
                                 filled: true,
                                 fillColor: Colors.white,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFe2e8f0)),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFe2e8f0)),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFF6366f1)),
-                                ),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFe2e8f0))),
+                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFe2e8f0))),
+                                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF6366f1))),
                               ),
                               textInputAction: TextInputAction.next,
-                              onFieldSubmitted: (_) =>
-                                  FocusScope.of(context).nextFocus(),
+                              onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
                             ),
                             const SizedBox(height: 14),
                             TextFormField(
@@ -184,23 +153,11 @@ class _LoginScreenState extends State<LoginScreen>
                                 hintText: '••••••',
                                 filled: true,
                                 fillColor: Colors.white,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFe2e8f0)),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFe2e8f0)),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFF6366f1)),
-                                ),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFe2e8f0))),
+                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFe2e8f0))),
+                                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF6366f1))),
                                 suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _showPw ? Icons.visibility_off : Icons.visibility,
-                                    color: const Color(0xFF64748b),
-                                  ),
+                                  icon: Icon(_showPw ? Icons.visibility_off : Icons.visibility, color: const Color(0xFF64748b)),
                                   onPressed: () => setState(() => _showPw = !_showPw),
                                 ),
                               ),
@@ -216,36 +173,15 @@ class _LoginScreenState extends State<LoginScreen>
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF6366f1),
                                   foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 ),
                                 child: _loading
-                                    ? const SizedBox(
-                                        width: 22,
-                                        height: 22,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text(
-                                        'Sign In',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                    : const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                               ),
                             ),
                             const SizedBox(height: 24),
-                            const Text(
-                              'Demo: admin / admin',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF64748b),
-                              ),
-                            ),
+                            const Text('Demo: admin / admin', style: TextStyle(fontSize: 12, color: Color(0xFF64748b))),
                           ],
                         ),
                       ),
@@ -254,6 +190,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
               ),
             ),
+          ),
         ),
       ),
     );

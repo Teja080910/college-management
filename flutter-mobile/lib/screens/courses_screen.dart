@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile/services/store_service.dart' as store;
-import 'package:flutter_mobile/models/course.dart';
 
 class CoursesScreen extends StatelessWidget {
   const CoursesScreen({super.key});
