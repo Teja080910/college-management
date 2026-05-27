@@ -79,6 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   avatar: const Icon(Icons.logout, size: 18, color: Color(0xFF64748b)),
                   label: const Text('Logout', style: TextStyle(fontSize: 12, color: Color(0xFF64748b))),
                   onPressed: () => context.read<AuthProvider>().logout(),
+                  backgroundColor: Colors.transparent,
                   side: const BorderSide(color: Color(0xFFe2e8f0)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
