@@ -104,7 +104,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
       ),
     );
     if (confirm == true) {
-      final periods = (day['periods'] as List).where((_, i) => i != idx).toList();
+      final periods = (day['periods'] as List).asMap().entries.where((e) => e.key != idx).map((e) => e.value).toList();
       await api.updateRecord('timetable', {'id': day['id'], 'day': day['day'], 'periods': periods});
       _load();
     }

@@ -146,13 +146,19 @@ class _FeesScreenState extends State<FeesScreen> {
         color: const Color(0xFF6366f1),
         onRefresh: _onRefresh,
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            if (_loading)
+              SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator(color: Color(0xFF6366f1))),
+              )
+            else ...[
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     const Text('Fees Status', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF1e293b))),
                     const SizedBox(height: 4),
                     const Text('Track fee payments', style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),

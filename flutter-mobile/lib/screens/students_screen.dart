@@ -12,6 +12,7 @@ class StudentsScreen extends StatefulWidget {
 class _StudentsScreenState extends State<StudentsScreen> {
   List<Student> _students = [];
   List<Student> _filtered = [];
+  bool _loading = true;
   bool _refreshing = false;
   String _search = '';
   bool _dialogOpen = false;
@@ -43,10 +44,12 @@ class _StudentsScreenState extends State<StudentsScreen> {
   }
 
   Future<void> _load() async {
+    if (!_refreshing) setState(() => _loading = true);
     final s = await api.fetchData('students');
     setState(() {
       _students = (s as List).map((e) => Student.fromJson(e as Map<String, dynamic>)).toList();
       _applyFilter();
+      _loading = false;
     });
   }
 
@@ -142,13 +145,19 @@ class _StudentsScreenState extends State<StudentsScreen> {
         color: const Color(0xFF6366f1),
         onRefresh: _onRefresh,
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            if (_loading)
+              SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator(color: Color(0xFF6366f1))),
+              )
+            else ...[
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     const Text('Students', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF1e293b))),
                     const SizedBox(height: 4),
                     const Text('Manage all registered students', style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),
@@ -202,7 +211,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                   color: Colors.white,
                   elevation: 1,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: !_refreshing && _filtered.isEmpty
+                  child: !_loading && !_refreshing && _filtered.isEmpty
                       ? const Padding(
                           padding: EdgeInsets.all(24),
                           child: Center(child: Text('No students found', style: TextStyle(fontSize: 14, color: Color(0xFF64748b)))),

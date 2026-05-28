@@ -13,6 +13,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   List _courses = [];
   List _fees = [];
   List _tests = [];
+  bool _loading = true;
   bool _refreshing = false;
 
   @override
@@ -22,6 +23,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   Future<void> _load() async {
+    if (!_refreshing) setState(() => _loading = true);
     final results = await Future.wait([
       api.fetchData('courses'),
       api.fetchData('fees'),
@@ -31,6 +33,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       _courses = results[0] as List;
       _fees = results[1] as List;
       _tests = results[2] as List;
+      _loading = false;
     });
   }
 
@@ -58,8 +61,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         color: const Color(0xFF6366f1),
         onRefresh: _onRefresh,
         child: ListView(
-          padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, padding.bottom + 24),
-          children: [
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, padding.bottom + 24),
+                children: _loading
+                    ? [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: const Center(child: CircularProgressIndicator(color: Color(0xFF6366f1))))]
+                    : [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -124,7 +130,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         ],
                       ),
                     )),
-                    if (!_refreshing && _courses.isEmpty)
+                    if (!_loading && !_refreshing && _courses.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Center(child: Text('No courses enrolled', style: TextStyle(fontSize: 14, color: Color(0xFF64748b)))),

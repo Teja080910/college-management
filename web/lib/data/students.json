@@ -95,5 +95,23 @@
     "email": "tejasimma033@gmail.com",
     "phone": "6300291529",
     "enrolled": true
+  },
+  {
+    "id": 8,
+    "name": "student one",
+    "age": 23,
+    "grade": "a",
+    "email": "tejasimma36@gmail.com",
+    "phone": "12346789",
+    "enrolled": true
+  },
+  {
+    "id": 9,
+    "name": "student two ",
+    "age": 10,
+    "grade": "d",
+    "email": "student@gmail.com",
+    "phone": "134678900",
+    "enrolled": true
   }
 ]

@@ -81,13 +81,19 @@ class _StudentFeesScreenState extends State<StudentFeesScreen> {
         color: const Color(0xFF6366f1),
         onRefresh: _onRefresh,
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            if (_loading)
+              SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator(color: Color(0xFF6366f1))),
+              )
+            else ...[
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     const Text('My Fees', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF1e293b))),
                     const SizedBox(height: 4),
                     const Text('View fee status and make payments', style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),

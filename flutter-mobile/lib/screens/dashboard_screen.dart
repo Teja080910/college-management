@@ -16,6 +16,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<Student> _students = [];
   List<Fee> _fees = [];
   List _tests = [];
+  bool _loading = true;
   bool _refreshing = false;
 
   @override
@@ -25,6 +26,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _load() async {
+    if (!_refreshing) setState(() => _loading = true);
     final results = await Future.wait([
       api.fetchData('students'),
       api.fetchData('fees'),
@@ -34,6 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _students = (results[0] as List).map((e) => Student.fromJson(e as Map<String, dynamic>)).toList();
       _fees = (results[1] as List).map((e) => Fee.fromJson(e as Map<String, dynamic>)).toList();
       _tests = results[2] as List;
+      _loading = false;
     });
   }
 
@@ -67,8 +70,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         color: const Color(0xFF6366f1),
         onRefresh: _onRefresh,
         child: ListView(
-          padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, padding.bottom + 24),
-          children: [
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, padding.bottom + 24),
+                children: _loading
+                    ? [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: const Center(child: CircularProgressIndicator(color: Color(0xFF6366f1))))]
+                    : [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -142,7 +148,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     const Text('Enrolled Students', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1e293b))),
                     const SizedBox(height: 12),
-                    if (!_refreshing && enrolled.isEmpty)
+                    if (!_loading && !_refreshing && enrolled.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text('No students enrolled', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),
