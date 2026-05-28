@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { loadData } from '@/lib/data'
+import { fetchData } from '@/lib/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CalendarDays, Clock, MapPin } from 'lucide-react'
@@ -17,22 +17,22 @@ const DAY_STYLES: Record<string, { gradient: string; dot: string; badge: string 
   Friday:    { gradient: 'from-rose-500/10 to-rose-500/5', dot: 'bg-rose-500', badge: 'bg-rose-500/10 text-rose-600' },
 }
 
-export default function TimetablePage() {
+export default function StudentTimetablePage() {
   const [timetable, setTimetable] = useState<DaySchedule[]>([])
   const [loaded, setLoaded] = useState(false)
   const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' })
 
   useEffect(() => {
     setLoaded(true)
-    loadData<DaySchedule[]>('timetable').then(setTimetable)
+    fetchData<DaySchedule[]>('timetable').then(setTimetable)
   }, [])
 
   return (
     <div className="space-y-8">
       <div className={`flex items-center justify-between transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Timetable</h1>
-          <p className="text-sm text-muted-foreground mt-1">Weekly class schedule</p>
+          <h1 className="text-3xl font-bold tracking-tight">My Timetable</h1>
+          <p className="text-sm text-muted-foreground mt-1">Your weekly class schedule</p>
         </div>
         <div className="flex items-center gap-2 text-sm bg-muted/50 px-3.5 py-2 rounded-xl border border-border/50">
           <CalendarDays className="size-4 text-primary" />

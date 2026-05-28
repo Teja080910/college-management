@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { loadData } from '@/lib/data'
+import { fetchData } from '@/lib/api'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -9,13 +9,13 @@ import { ClipboardList, Calendar, MapPin, AlertCircle } from 'lucide-react'
 
 interface Test { id: number; title: string; course: string; date: string; time: string; venue: string }
 
-export default function TestsPage() {
+export default function StudentTestsPage() {
   const [tests, setTests] = useState<Test[]>([])
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     setLoaded(true)
-    loadData<Test[]>('tests').then(setTests)
+    fetchData<Test[]>('tests').then(setTests)
   }, [])
 
   const sorted = [...tests].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -26,8 +26,8 @@ export default function TestsPage() {
     <div className="space-y-8">
       <div className={`flex items-center justify-between transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Test Schedule</h1>
-          <p className="text-sm text-muted-foreground mt-1">Upcoming examinations and tests</p>
+          <h1 className="text-3xl font-bold tracking-tight">My Tests</h1>
+          <p className="text-sm text-muted-foreground mt-1">Upcoming exams and test schedule</p>
         </div>
         <div className="flex items-center gap-2 text-sm bg-muted/50 px-3.5 py-2 rounded-xl border border-border/50">
           <ClipboardList className="size-4 text-primary" />
@@ -37,7 +37,7 @@ export default function TestsPage() {
 
       <Card className={`border bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-700 delay-200 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Examinations</CardTitle>
+          <CardTitle className="text-lg">Examination Schedule</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>

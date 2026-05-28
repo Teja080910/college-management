@@ -3,11 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter_mobile/providers/auth_provider.dart';
 import 'package:flutter_mobile/providers/crud_provider.dart';
 import 'package:flutter_mobile/navigation/app_router.dart';
-import 'package:flutter_mobile/services/store_service.dart' as store;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await store.initStore();
   runApp(const StudentPortalApp());
 }
 

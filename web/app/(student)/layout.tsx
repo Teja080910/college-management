@@ -5,15 +5,18 @@ import { useRouter } from 'next/navigation'
 import { AuthContext } from '@/lib/auth'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
-import AppSidebar from '@/components/layout/AppSidebar'
+import AppSidebarStudent from '@/components/layout/AppSidebarStudent'
 import { GraduationCap } from "lucide-react"
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function StudentLayout({ children }: { children: ReactNode }) {
   const ctx = useContext(AuthContext)
   const router = useRouter()
 
   useEffect(() => {
-    if (ctx && !ctx.loading && !ctx.isAuthenticated) router.replace('/login')
+    if (ctx && !ctx.loading) {
+      if (!ctx.isAuthenticated) router.replace('/login')
+      else if (ctx.user?.role !== 'student') router.replace('/dashboard')
+    }
   }, [ctx, router])
 
   if (!ctx || ctx.loading) return null
@@ -21,7 +24,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <AppSidebar user={ctx.user} onLogout={() => { ctx.logout(); router.push('/login') }} />
+      <AppSidebarStudent user={ctx.user} onLogout={() => { ctx.logout(); router.push('/login') }} />
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border/50 bg-white/70 backdrop-blur-xl px-5 shadow-sm">
           <SidebarTrigger className="-ml-1.5 size-8 rounded-lg hover:bg-muted/50 transition-colors" />

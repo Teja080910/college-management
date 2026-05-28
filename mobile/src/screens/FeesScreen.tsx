@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react'
-import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable } from 'react-native'
+import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable, ActivityIndicator } from 'react-native'
 import { Text, Card, Button, TextInput, Chip } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
-import { getFees, createFee, updateFee, deleteFee } from '../utils/store'
+import { fetchData, createRecord, updateRecord, deleteRecord } from '../utils/api'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
 interface Fee { id: number; studentName: string; totalFees: number; paid: number; due: number; status: string }
@@ -15,9 +15,10 @@ export default function FeesScreen() {
   const [editing, setEditing] = useState<Fee | null>(null)
   const [form, setForm] = useState({ studentName: '', totalFees: '', paid: '' })
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(true)
   const insets = useSafeAreaInsets()
 
-  const load = async () => setFees(await getFees())
+  const load = async () => { setLoading(true); setFees(await fetchData<Fee[]>('fees')); setLoading(false) }
   useFocusEffect(useCallback(() => { load() }, []))
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false) }
 
@@ -30,8 +31,8 @@ export default function FeesScreen() {
     const paid = parseInt(form.paid) || 0
     const due = totalFees - paid
     const status = due === 0 ? 'paid' : paid > 0 ? 'partial' : 'unpaid'
-    if (editing) await updateFee(editing.id, { studentName: form.studentName, totalFees, paid, due, status })
-    else await createFee({ studentId: 0, studentName: form.studentName, totalFees, paid, due, status })
+    if (editing) await updateRecord('fees', { id: editing.id, studentName: form.studentName, totalFees, paid, due, status })
+    else await createRecord('fees', { studentId: 0, studentName: form.studentName, totalFees, paid, due, status })
     setSaving(false)
     setDialogOpen(false)
     load()
@@ -40,7 +41,7 @@ export default function FeesScreen() {
   const handleDelete = (id: number) => {
     Alert.alert('Delete fee record', 'Are you sure?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteFee(id); load() } },
+      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteRecord('fees', id); load() } },
     ])
   }
 
@@ -67,67 +68,75 @@ export default function FeesScreen() {
         <Text style={{ fontSize: 24, fontWeight: '700', color: '#1e293b', marginBottom: 4 }}>Fees Status</Text>
         <Text style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>Track fee payments</Text>
 
-        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
-          {[{ label: 'Collected', value: totalCollected, color: '#16a34a' },
-            { label: 'Pending', value: totalDue, color: '#dc2626' },
-            { label: 'Total', value: fees.reduce((s,f) => s+f.totalFees, 0), color: '#6366f1' }
-          ].map(item => (
-            <Card key={item.label} style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 16 }} elevation={1}>
-              <Card.Content style={{ padding: 12 }}>
-                <Text style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>{item.label}</Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: item.color }}>₹{(item.value/1000).toFixed(1)}K</Text>
+        {loading ? (
+          <View style={{ padding: 40, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="small" color="#6366f1" />
+          </View>
+        ) : (
+          <>
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+              {[{ label: 'Collected', value: totalCollected, color: '#16a34a' },
+                { label: 'Pending', value: totalDue, color: '#dc2626' },
+                { label: 'Total', value: fees.reduce((s,f) => s+f.totalFees, 0), color: '#6366f1' }
+              ].map(item => (
+                <Card key={item.label} style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 16 }} elevation={1}>
+                  <Card.Content style={{ padding: 12 }}>
+                    <Text style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>{item.label}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: item.color }}>₹{(item.value/1000).toFixed(1)}K</Text>
+                  </Card.Content>
+                </Card>
+              ))}
+            </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <Chip icon="currency-inr" style={{ backgroundColor: '#eef2ff' }} textStyle={{ color: '#6366f1', fontSize: 12 }}>
+                {collectionRate}% collected
+              </Chip>
+              <Button mode="contained" onPress={openAdd} buttonColor="#6366f1"
+                style={{ borderRadius: 12 }} contentStyle={{ height: 36 }}
+                icon={() => <MaterialCommunityIcons name="plus" size={16} color="#fff" />}>
+                Add
+              </Button>
+            </View>
+
+            <Card style={{ backgroundColor: '#ffffff', borderRadius: 16 }} elevation={1}>
+              <Card.Content style={{ paddingVertical: 4 }}>
+                {fees.map(f => {
+                  const sc = statusColor(f.status)
+                  return (
+                    <TouchableOpacity key={f.id} onPress={() => openEdit(f)}>
+                      <View style={{
+                        flexDirection: 'row', alignItems: 'center', paddingVertical: 14,
+                        paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
+                      }}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ fontSize: 14, fontWeight: '500', color: '#1e293b' }}>{f.studentName}</Text>
+                          <Text style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+                            ₹{f.totalFees.toLocaleString()} · Paid: ₹{f.paid.toLocaleString()}
+                          </Text>
+                        </View>
+                        <View style={{ alignItems: 'flex-end', gap: 4 }}>
+                          <View style={{ backgroundColor: sc.bg, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 20 }}>
+                            <Text style={{ color: sc.text, fontSize: 12, fontWeight: '600', textTransform: 'capitalize' }}>{f.status}</Text>
+                          </View>
+                          <Text style={{ fontSize: 12, fontWeight: '700', color: f.due > 0 ? '#dc2626' : '#16a34a' }}>
+                            Due: ₹{f.due.toLocaleString()}
+                          </Text>
+                        </View>
+                        <TouchableOpacity onPress={() => handleDelete(f.id)} style={{ padding: 4, marginLeft: 8 }}>
+                          <MaterialCommunityIcons name="delete-outline" size={18} color="#dc2626" />
+                        </TouchableOpacity>
+                      </View>
+                    </TouchableOpacity>
+                  )
+                })}
+                {fees.length === 0 && (
+                  <Text style={{ fontSize: 14, color: '#64748b', textAlign: 'center', paddingVertical: 24 }}>No fee records</Text>
+                )}
               </Card.Content>
             </Card>
-          ))}
-        </View>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <Chip icon="currency-inr" style={{ backgroundColor: '#eef2ff' }} textStyle={{ color: '#6366f1', fontSize: 12 }}>
-            {collectionRate}% collected
-          </Chip>
-          <Button mode="contained" onPress={openAdd} buttonColor="#6366f1"
-            style={{ borderRadius: 12 }} contentStyle={{ height: 36 }}
-            icon={() => <MaterialCommunityIcons name="plus" size={16} color="#fff" />}>
-            Add
-          </Button>
-        </View>
-
-        <Card style={{ backgroundColor: '#ffffff', borderRadius: 16 }} elevation={1}>
-          <Card.Content style={{ paddingVertical: 4 }}>
-            {fees.map(f => {
-              const sc = statusColor(f.status)
-              return (
-                <TouchableOpacity key={f.id} onPress={() => openEdit(f)}>
-                  <View style={{
-                    flexDirection: 'row', alignItems: 'center', paddingVertical: 14,
-                    paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
-                  }}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: '500', color: '#1e293b' }}>{f.studentName}</Text>
-                      <Text style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
-                        ₹{f.totalFees.toLocaleString()} · Paid: ₹{f.paid.toLocaleString()}
-                      </Text>
-                    </View>
-                    <View style={{ alignItems: 'flex-end', gap: 4 }}>
-                      <View style={{ backgroundColor: sc.bg, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 20 }}>
-                        <Text style={{ color: sc.text, fontSize: 12, fontWeight: '600', textTransform: 'capitalize' }}>{f.status}</Text>
-                      </View>
-                      <Text style={{ fontSize: 12, fontWeight: '700', color: f.due > 0 ? '#dc2626' : '#16a34a' }}>
-                        Due: ₹{f.due.toLocaleString()}
-                      </Text>
-                    </View>
-                    <TouchableOpacity onPress={() => handleDelete(f.id)} style={{ padding: 4, marginLeft: 8 }}>
-                      <MaterialCommunityIcons name="delete-outline" size={18} color="#dc2626" />
-                    </TouchableOpacity>
-                  </View>
-                </TouchableOpacity>
-              )
-            })}
-            {fees.length === 0 && (
-              <Text style={{ fontSize: 14, color: '#64748b', textAlign: 'center', paddingVertical: 24 }}>No fee records</Text>
-            )}
-          </Card.Content>
-        </Card>
+          </>
+        )}
       </ScrollView>
 
       <Modal visible={dialogOpen} transparent animationType="fade" onRequestClose={() => setDialogOpen(false)}>

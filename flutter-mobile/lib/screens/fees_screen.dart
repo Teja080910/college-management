@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile/models/fee.dart';
-import 'package:flutter_mobile/services/store_service.dart' as store;
+import 'package:flutter_mobile/services/api_service.dart' as api;
 
 class FeesScreen extends StatefulWidget {
   const FeesScreen({super.key});
@@ -11,6 +11,7 @@ class FeesScreen extends StatefulWidget {
 
 class _FeesScreenState extends State<FeesScreen> {
   List<Fee> _fees = [];
+  bool _loading = true;
   bool _refreshing = false;
   bool _dialogOpen = false;
   Fee? _editing;
@@ -35,8 +36,12 @@ class _FeesScreenState extends State<FeesScreen> {
   }
 
   Future<void> _load() async {
-    final f = await store.getFees();
-    setState(() => _fees = f);
+    if (!_refreshing) setState(() => _loading = true);
+    final f = await api.fetchData('fees');
+    setState(() {
+      _fees = (f as List).map((e) => Fee.fromJson(e as Map<String, dynamic>)).toList();
+      _loading = false;
+    });
   }
 
   Future<void> _onRefresh() async {
@@ -78,9 +83,9 @@ class _FeesScreenState extends State<FeesScreen> {
     };
 
     if (_editing != null) {
-      await store.updateFee(_editing!.id, data);
+      await api.updateRecord('fees', {...data, 'id': _editing!.id});
     } else {
-      await store.createFee(data);
+      await api.createRecord('fees', data);
     }
     setState(() => _saving = false);
     setState(() => _dialogOpen = false);
@@ -104,7 +109,7 @@ class _FeesScreenState extends State<FeesScreen> {
       ),
     );
     if (confirm == true) {
-      await store.deleteFee(id);
+      await api.deleteRecord('fees', id);
       _load();
     }
   }
@@ -198,7 +203,7 @@ class _FeesScreenState extends State<FeesScreen> {
                   color: Colors.white,
                   elevation: 1,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: _fees.isEmpty
+                  child: !_loading && !_refreshing && _fees.isEmpty
                       ? const Padding(padding: EdgeInsets.all(24), child: Center(child: Text('No fee records', style: TextStyle(fontSize: 14, color: Color(0xFF64748b)))))
                       : ListView.separated(
                           shrinkWrap: true,

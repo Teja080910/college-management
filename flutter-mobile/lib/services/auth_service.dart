@@ -24,20 +24,20 @@ class User {
 const _tokenKey = '@portal_token';
 const _userKey = '@portal_user';
 
-const _authData = {
-  'user': {'username': 'admin', 'name': 'Administrator', 'role': 'Admin'},
-  'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token',
-};
+const _users = [
+  {'username': 'admin', 'password': 'admin', 'name': 'Administrator', 'role': 'admin', 'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token-admin'},
+  {'username': 'student', 'password': 'student123', 'name': 'Student User', 'role': 'student', 'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token-student'},
+];
 
 Future<Map<String, dynamic>> login(String username, String password) async {
-  if (username == 'admin' && password == 'admin') {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, _authData['token'] as String);
-    await prefs.setString(_userKey, jsonEncode(_authData['user']));
-    return {
-      'success': true,
-      'user': User.fromJson(_authData['user'] as Map<String, dynamic>),
-    };
+  for (final u in _users) {
+    if (u['username'] == username && u['password'] == password) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_tokenKey, u['token'] as String);
+      final userData = {'username': u['username'], 'name': u['name'], 'role': u['role']};
+      await prefs.setString(_userKey, jsonEncode(userData));
+      return {'success': true, 'user': User.fromJson(userData)};
+    }
   }
   return {'success': false};
 }

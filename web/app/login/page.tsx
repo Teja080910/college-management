@@ -21,7 +21,13 @@ export default function LoginPage() {
   useEffect(() => { setLoaded(true) }, [])
 
   useEffect(() => {
-    if (ctx && !ctx.loading && ctx.isAuthenticated) router.replace('/dashboard')
+    if (ctx && !ctx.loading && ctx.isAuthenticated) {
+      if (ctx.user?.role === 'student') {
+        router.replace('/my-dashboard')
+      } else {
+        router.replace('/dashboard')
+      }
+    }
   }, [ctx, router])
 
   if (ctx?.loading) return null
@@ -32,13 +38,13 @@ export default function LoginPage() {
     setError('')
     setIsLoading(true)
     await new Promise(r => setTimeout(r, 600))
-    const result = ctx?.login(username, password)
-    if (result?.success) {
-      router.replace('/dashboard')
-    } else {
-      setError('Invalid credentials. Try admin/admin.')
-      setIsLoading(false)
-    }
+      const result = ctx?.login(username, password)
+      if (result?.success) {
+        router.replace(ctx?.user?.role === 'student' ? '/my-dashboard' : '/dashboard')
+      } else {
+        setError('Invalid credentials.')
+        setIsLoading(false)
+      }
   }
 
   return (
@@ -137,8 +143,9 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <p className="mt-6 text-xs text-center text-muted-foreground">
-              Demo credentials: <span className="font-mono font-medium text-foreground">admin</span> / <span className="font-mono font-medium text-foreground">admin</span>
+            <p className="mt-6 text-xs text-center text-muted-foreground leading-relaxed">
+              Admin: <span className="font-mono font-medium text-foreground">admin</span> / <span className="font-mono font-medium text-foreground">admin</span><br />
+              Student: <span className="font-mono font-medium text-foreground">student</span> / <span className="font-mono font-medium text-foreground">student123</span>
             </p>
           </div>
         </div>

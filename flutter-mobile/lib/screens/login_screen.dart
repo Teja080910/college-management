@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen>
     if (!mounted) return;
     setState(() {
       if (result['success'] != true) {
-        _error = 'Invalid credentials. Try admin/admin.';
+        _error = 'Invalid credentials.';
       }
       _loading = false;
     });
@@ -131,11 +131,13 @@ class _LoginScreenState extends State<LoginScreen>
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(color: const Color(0xFFfecaca)),
                                       ),
-                                      child: const Text('Invalid credentials. Try admin/admin.',
+                                      child: const Text('Invalid credentials.',
                                           style: TextStyle(color: Color(0xFFdc2626), fontSize: 14)),
                                     ),
                                   TextFormField(
                                     controller: _usernameController,
+                                    autocorrect: false,
+                                    textCapitalization: TextCapitalization.none,
                                     decoration: InputDecoration(
                                       labelText: 'Username',
                                       hintText: 'admin',
@@ -185,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 24),
-                                  const Text('Demo: admin / admin', style: TextStyle(fontSize: 12, color: Color(0xFF64748b))),
+                                  const Text('Admin: admin/admin    Student: student/student123', style: TextStyle(fontSize: 12, color: Color(0xFF64748b))),
                                 ],
                               ),
                             ),

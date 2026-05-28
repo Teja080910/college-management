@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
 import { User, login as authLogin, logout as authLogout, getStoredUser } from '../utils/auth'
-import { initStore } from '../utils/store'
 
 interface AuthContextType {
   user: User | null
@@ -17,7 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([getStoredUser(), initStore()]).then(([u]) => {
+    getStoredUser().then(u => {
       if (u) setUser(u)
       setLoading(false)
     })

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_mobile/providers/auth_provider.dart';
-import 'package:flutter_mobile/services/store_service.dart' as store;
+import 'package:flutter_mobile/services/api_service.dart' as api;
 import 'package:flutter_mobile/models/student.dart';
 import 'package:flutter_mobile/models/fee.dart';
 
@@ -15,6 +15,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   List<Student> _students = [];
   List<Fee> _fees = [];
+  List _tests = [];
   bool _refreshing = false;
 
   @override
@@ -24,11 +25,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _load() async {
-    final s = await store.getStudents();
-    final f = await store.getFees();
+    final results = await Future.wait([
+      api.fetchData('students'),
+      api.fetchData('fees'),
+      api.fetchData('tests'),
+    ]);
     setState(() {
-      _students = s;
-      _fees = f;
+      _students = (results[0] as List).map((e) => Student.fromJson(e as Map<String, dynamic>)).toList();
+      _fees = (results[1] as List).map((e) => Fee.fromJson(e as Map<String, dynamic>)).toList();
+      _tests = results[2] as List;
     });
   }
 
@@ -43,8 +48,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final padding = MediaQuery.of(context).padding;
     final paidCount = _fees.where((f) => f.status == 'paid').length;
     final totalRevenue = _fees.fold(0, (sum, f) => sum + f.paid);
-    final upcomingTests = store.defaultTests
-        .where((t) => DateTime.tryParse(t.date) != null && DateTime.parse(t.date).isAfter(DateTime.now()))
+    final upcomingTests = _tests
+        .where((t) => DateTime.tryParse(t['date'] ?? '') != null && DateTime.parse(t['date']).isAfter(DateTime.now()))
         .length;
 
     final stats = [
@@ -137,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     const Text('Enrolled Students', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1e293b))),
                     const SizedBox(height: 12),
-                    if (enrolled.isEmpty)
+                    if (!_refreshing && enrolled.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text('No students enrolled', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),

@@ -8,6 +8,11 @@ import 'package:flutter_mobile/screens/fees_screen.dart';
 import 'package:flutter_mobile/screens/timetable_screen.dart';
 import 'package:flutter_mobile/screens/courses_screen.dart';
 import 'package:flutter_mobile/screens/tests_screen.dart';
+import 'package:flutter_mobile/screens/student_dashboard_screen.dart';
+import 'package:flutter_mobile/screens/student_courses_screen.dart';
+import 'package:flutter_mobile/screens/student_timetable_screen.dart';
+import 'package:flutter_mobile/screens/student_fees_screen.dart';
+import 'package:flutter_mobile/screens/student_tests_screen.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -22,7 +27,10 @@ class AuthGate extends StatelessWidget {
         ),
       );
     }
-    return auth.isAuthenticated ? const MainTabs() : const LoginScreen();
+    if (!auth.isAuthenticated) return const LoginScreen();
+    final role = auth.user?.role;
+    if (role == 'student') return const StudentTabs();
+    return const MainTabs();
   }
 }
 
@@ -82,6 +90,70 @@ class _MainTabsState extends State<MainTabs> {
                 BottomNavigationBarItem(icon: Icon(Icons.currency_rupee_outlined), activeIcon: Icon(Icons.currency_rupee), label: 'Fees'),
                 BottomNavigationBarItem(icon: Icon(Icons.calendar_month_outlined), activeIcon: Icon(Icons.calendar_month), label: 'Timetable'),
                 BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), activeIcon: Icon(Icons.menu_book), label: 'Courses'),
+                BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), activeIcon: Icon(Icons.assignment), label: 'Tests'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class StudentTabs extends StatefulWidget {
+  const StudentTabs({super.key});
+
+  @override
+  State<StudentTabs> createState() => _StudentTabsState();
+}
+
+class _StudentTabsState extends State<StudentTabs> {
+  int _selectedIndex = 0;
+
+  static const _screens = <Widget>[
+    StudentDashboardScreen(),
+    StudentCoursesScreen(),
+    StudentTimetableScreen(),
+    StudentFeesScreen(),
+    StudentTestsScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366f1).withOpacity(0.12),
+              blurRadius: 16,
+              offset: const Offset(0, -6),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: (i) => setState(() => _selectedIndex = i),
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.transparent,
+              selectedItemColor: const Color(0xFF6366f1),
+              unselectedItemColor: const Color(0xFF94a3b8),
+              selectedFontSize: 11,
+              unselectedFontSize: 11,
+              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
+              iconSize: 26,
+              elevation: 0,
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), activeIcon: Icon(Icons.dashboard), label: 'Dashboard'),
+                BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), activeIcon: Icon(Icons.menu_book), label: 'My Courses'),
+                BottomNavigationBarItem(icon: Icon(Icons.calendar_month_outlined), activeIcon: Icon(Icons.calendar_month), label: 'Timetable'),
+                BottomNavigationBarItem(icon: Icon(Icons.currency_rupee_outlined), activeIcon: Icon(Icons.currency_rupee), label: 'My Fees'),
                 BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), activeIcon: Icon(Icons.assignment), label: 'Tests'),
               ],
             ),

@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable, Keyboard } from 'react-native'
+import { View, ScrollView, RefreshControl, Alert, TouchableOpacity, Modal, Pressable, Keyboard, ActivityIndicator } from 'react-native'
 import { Text, Card, Button, TextInput, Chip, Searchbar } from 'react-native-paper'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
-import { getStudents, createStudent, updateStudent, deleteStudent } from '../utils/store'
+import { fetchData, createRecord, updateRecord, deleteRecord } from '../utils/api'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
 interface Student { id: number; name: string; age: number; grade: string; email: string; phone: string; enrolled: boolean }
@@ -16,6 +16,7 @@ export default function StudentsScreen() {
   const [editing, setEditing] = useState<Student | null>(null)
   const [form, setForm] = useState({ name: '', age: '', grade: '', email: '', phone: '', enrolled: true })
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(true)
   const insets = useSafeAreaInsets()
   const [keyboardHeight, setKeyboardHeight] = useState(0)
 
@@ -25,7 +26,7 @@ export default function StudentsScreen() {
     return () => { showSub.remove(); hideSub.remove() }
   }, [])
 
-  const load = async () => setStudents(await getStudents())
+  const load = async () => { setLoading(true); setStudents(await fetchData<Student[]>('students')); setLoading(false) }
   useFocusEffect(useCallback(() => { load() }, []))
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false) }
 
@@ -35,8 +36,8 @@ export default function StudentsScreen() {
   const handleSave = async () => {
     setSaving(true)
     const payload = { name: form.name, age: parseInt(form.age) || 0, grade: form.grade, email: form.email, phone: form.phone, enrolled: form.enrolled }
-    if (editing) await updateStudent(editing.id, payload)
-    else await createStudent(payload as any)
+    if (editing) await updateRecord('students', { id: editing.id, ...payload })
+    else await createRecord('students', payload)
     setSaving(false)
     setDialogOpen(false)
     load()
@@ -45,7 +46,7 @@ export default function StudentsScreen() {
   const handleDelete = (id: number) => {
     Alert.alert('Delete student', 'Are you sure?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteStudent(id); load() } },
+      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteRecord('students', id); load() } },
     ])
   }
 
@@ -74,6 +75,11 @@ export default function StudentsScreen() {
         </View>
         <Card style={{ backgroundColor: '#ffffff', borderRadius: 16 }} elevation={1}>
           <Card.Content style={{ paddingVertical: 4 }}>
+            {loading && (
+              <View style={{ padding: 40, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="small" color="#6366f1" />
+              </View>
+            )}
             {filtered.map(s => (
               <TouchableOpacity key={s.id} onPress={() => openEdit(s)}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
@@ -97,7 +103,7 @@ export default function StudentsScreen() {
                 </View>
               </TouchableOpacity>
             ))}
-            {filtered.length === 0 && <Text style={{ fontSize: 14, color: '#64748b', textAlign: 'center', paddingVertical: 24 }}>No students found</Text>}
+            {!loading && filtered.length === 0 && <Text style={{ fontSize: 14, color: '#64748b', textAlign: 'center', paddingVertical: 24 }}>No students found</Text>}
           </Card.Content>
         </Card>
       </ScrollView>

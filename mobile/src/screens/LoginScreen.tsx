@@ -32,7 +32,7 @@ export default function LoginScreen() {
     setLoading(true)
     setTimeout(async () => {
       const result = await login(username, password)
-      if (!result.success) setError('Invalid credentials. Try admin/admin.')
+      if (!result.success) setError('Invalid credentials.')
       setLoading(false)
     }, 600)
   }
@@ -72,20 +72,22 @@ export default function LoginScreen() {
             onSubmitEditing={() => pwRef.current?.focus()} blurOnSubmit={false}
             style={{ marginBottom: 14, backgroundColor: '#ffffff' }}
             outlineStyle={{ borderRadius: 12, borderColor: '#e2e8f0' }}
-            activeOutlineColor="#6366f1" contentStyle={{ fontSize: 15 }} />
+            activeOutlineColor="#6366f1" contentStyle={{ fontSize: 15 }}
+            autoCapitalize="none" />
           <TextInput ref={pwRef} label="Password" value={password} onChangeText={setPassword}
             mode="outlined" secureTextEntry={!showPw} placeholder="••••••"
             returnKeyType="done" onSubmitEditing={handleSubmit}
             style={{ marginBottom: 24, backgroundColor: '#ffffff' }}
             outlineStyle={{ borderRadius: 12, borderColor: '#e2e8f0' }}
             activeOutlineColor="#6366f1" contentStyle={{ fontSize: 15 }}
+            autoCapitalize="none"
             right={<TextInput.Icon icon={showPw ? 'eye-off' : 'eye'} onPress={() => setShowPw(!showPw)} />} />
           <Button mode="contained" onPress={handleSubmit} loading={loading} disabled={loading}
             contentStyle={{ height: 50 }} style={{ borderRadius: 12 }} buttonColor="#6366f1">
             Sign In
           </Button>
           <Text style={{ fontSize: 12, color: '#64748b', textAlign: 'center', marginTop: 24 }}>
-            Demo: admin / admin
+            Admin: admin/admin    Student: student/student123
           </Text>
         </Card.Content>
       </Card>

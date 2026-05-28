@@ -5,7 +5,7 @@ import { createContext, useState, useEffect, useCallback, ReactNode } from 'reac
 interface User {
   username: string
   name: string
-  role: string
+  role: 'admin' | 'student'
 }
 
 interface AuthContextType {
@@ -18,10 +18,10 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | null>(null)
 
-const AUTH_DATA = {
-  user: { username: 'admin', name: 'Administrator', role: 'Admin' },
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token-for-demo',
-}
+const USERS = [
+  { username: 'admin', password: 'admin', user: { username: 'admin', name: 'Administrator', role: 'admin' as const }, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token-admin' },
+  { username: 'student', password: 'student123', user: { username: 'student', name: 'Student User', role: 'student' as const }, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token-student' },
+]
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -37,11 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = useCallback((username: string, password: string) => {
-    if (username === 'admin' && password === 'admin') {
-      const { user, token } = AUTH_DATA
-      localStorage.setItem('portal_token', token)
-      localStorage.setItem('portal_user', JSON.stringify(user))
-      setUser(user)
+    const match = USERS.find(u => u.username === username && u.password === password)
+    if (match) {
+      localStorage.setItem('portal_token', match.token)
+      localStorage.setItem('portal_user', JSON.stringify(match.user))
+      setUser(match.user)
       return { success: true }
     }
     return { success: false }

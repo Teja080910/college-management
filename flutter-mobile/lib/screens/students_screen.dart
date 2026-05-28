@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile/models/student.dart';
-import 'package:flutter_mobile/services/store_service.dart' as store;
+import 'package:flutter_mobile/services/api_service.dart' as api;
 
 class StudentsScreen extends StatefulWidget {
   const StudentsScreen({super.key});
@@ -43,9 +43,9 @@ class _StudentsScreenState extends State<StudentsScreen> {
   }
 
   Future<void> _load() async {
-    final s = await store.getStudents();
+    final s = await api.fetchData('students');
     setState(() {
-      _students = s;
+      _students = (s as List).map((e) => Student.fromJson(e as Map<String, dynamic>)).toList();
       _applyFilter();
     });
   }
@@ -101,9 +101,9 @@ class _StudentsScreenState extends State<StudentsScreen> {
       'enrolled': _enrolled,
     };
     if (_editing != null) {
-      await store.updateStudent(_editing!.id, data);
+      await api.updateRecord('students', {...data, 'id': _editing!.id});
     } else {
-      await store.createStudent(data);
+      await api.createRecord('students', data);
     }
     setState(() => _saving = false);
     setState(() => _dialogOpen = false);
@@ -127,7 +127,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
       ),
     );
     if (confirm == true) {
-      await store.deleteStudent(id);
+      await api.deleteRecord('students', id);
       _load();
     }
   }
@@ -202,7 +202,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                   color: Colors.white,
                   elevation: 1,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: _filtered.isEmpty
+                  child: !_refreshing && _filtered.isEmpty
                       ? const Padding(
                           padding: EdgeInsets.all(24),
                           child: Center(child: Text('No students found', style: TextStyle(fontSize: 14, color: Color(0xFF64748b)))),
