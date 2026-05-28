@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _baseUrl = 'https://mock-college-management.vercel.app';
+const _baseUrl = 'https://college.arkasodhara.tech';
 
 Future<String?> _getToken() async {
   final prefs = await SharedPreferences.getInstance();
