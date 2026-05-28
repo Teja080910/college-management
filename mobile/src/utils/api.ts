@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const BASE_URL = 'http://10.38.105.1:1200'
+const BASE_URL = 'https://mock-college-management.vercel.app'
 
 async function getToken(): Promise<string | null> {
   return AsyncStorage.getItem('@portal_token')

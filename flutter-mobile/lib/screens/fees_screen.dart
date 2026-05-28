@@ -142,121 +142,118 @@ class _FeesScreenState extends State<FeesScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFf8fafc),
-      body: RefreshIndicator(
-        color: const Color(0xFF6366f1),
-        onRefresh: _onRefresh,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            if (_loading)
-              SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator(color: Color(0xFF6366f1))),
-              )
-            else ...[
-              SliverPadding(
-                padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    const Text('Fees Status', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF1e293b))),
-                    const SizedBox(height: 4),
-                    const Text('Track fee payments', style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        _summaryCard('Collected', '₹${(totalCollected / 1000).toStringAsFixed(1)}K', const Color(0xFF16a34a)),
-                        const SizedBox(width: 8),
-                        _summaryCard('Pending', '₹${(totalDue / 1000).toStringAsFixed(1)}K', const Color(0xFFdc2626)),
-                        const SizedBox(width: 8),
-                        _summaryCard('Total', '₹${(totalFees / 1000).toStringAsFixed(1)}K', const Color(0xFF6366f1)),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Chip(
-                          avatar: const Icon(Icons.currency_rupee, size: 16, color: Color(0xFF6366f1)),
-                          label: Text('$collectionRate% collected', style: const TextStyle(fontSize: 12, color: Color(0xFF6366f1))),
-                          backgroundColor: const Color(0xFFeef2ff),
-                          side: BorderSide.none,
-                        ),
-                        SizedBox(
-                          height: 36,
-                          child: ElevatedButton.icon(
-                            onPressed: _openAdd,
-                            icon: const Icon(Icons.add, size: 16),
-                            label: const Text('Add', style: TextStyle(fontSize: 13)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6366f1),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF6366f1)))
+          : RefreshIndicator(
+              color: const Color(0xFF6366f1),
+              onRefresh: _onRefresh,
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(16, padding.top + 16, 16, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Fees Status', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF1e293b))),
+                          const SizedBox(height: 4),
+                          const Text('Track fee payments', style: TextStyle(fontSize: 14, color: Color(0xFF64748b))),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              _summaryCard('Collected', '₹${(totalCollected / 1000).toStringAsFixed(1)}K', const Color(0xFF16a34a)),
+                              const SizedBox(width: 8),
+                              _summaryCard('Pending', '₹${(totalDue / 1000).toStringAsFixed(1)}K', const Color(0xFFdc2626)),
+                              const SizedBox(width: 8),
+                              _summaryCard('Total', '₹${(totalFees / 1000).toStringAsFixed(1)}K', const Color(0xFF6366f1)),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, padding.bottom + 24),
-              sliver: SliverToBoxAdapter(
-                child: Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: !_loading && !_refreshing && _fees.isEmpty
-                      ? const Padding(padding: EdgeInsets.all(24), child: Center(child: Text('No fee records', style: TextStyle(fontSize: 14, color: Color(0xFF64748b)))))
-                      : ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _fees.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFf1f5f9)),
-                          itemBuilder: (ctx, i) {
-                            final f = _fees[i];
-                            return ListTile(
-                              onTap: () => _openEdit(f),
-                              title: Text(f.studentName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF1e293b))),
-                              subtitle: Text('₹${f.totalFees.toString()} · Paid: ₹${f.paid.toString()}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748b))),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                                        decoration: BoxDecoration(color: _statusBg(f.status), borderRadius: BorderRadius.circular(20)),
-                                        child: Text(f.status, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _statusColor(f.status))),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Due: ₹${f.due.toString()}',
-                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: f.due > 0 ? const Color(0xFFdc2626) : const Color(0xFF16a34a)),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 4),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFFdc2626)),
-                                    onPressed: () => _handleDelete(f.id),
-                                  ),
-                                ],
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Chip(
+                                avatar: const Icon(Icons.currency_rupee, size: 16, color: Color(0xFF6366f1)),
+                                label: Text('$collectionRate% collected', style: const TextStyle(fontSize: 12, color: Color(0xFF6366f1))),
+                                backgroundColor: const Color(0xFFeef2ff),
+                                side: BorderSide.none,
                               ),
-                            );
-                          },
-                        ),
-                ),
+                              SizedBox(
+                                height: 36,
+                                child: ElevatedButton.icon(
+                                  onPressed: _openAdd,
+                                  icon: const Icon(Icons.add, size: 16),
+                                  label: const Text('Add', style: TextStyle(fontSize: 13)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF6366f1),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, padding.bottom + 24),
+                    sliver: SliverToBoxAdapter(
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 1,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        child: _fees.isEmpty
+                            ? const Padding(padding: EdgeInsets.all(24), child: Center(child: Text('No fee records', style: TextStyle(fontSize: 14, color: Color(0xFF64748b)))))
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: _fees.length,
+                                separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFf1f5f9)),
+                                itemBuilder: (ctx, i) {
+                                  final f = _fees[i];
+                                  return ListTile(
+                                    onTap: () => _openEdit(f),
+                                    title: Text(f.studentName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF1e293b))),
+                                    subtitle: Text('₹${f.totalFees.toString()} · Paid: ₹${f.paid.toString()}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748b))),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                              decoration: BoxDecoration(color: _statusBg(f.status), borderRadius: BorderRadius.circular(20)),
+                                              child: Text(f.status, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _statusColor(f.status))),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              'Due: ₹${f.due.toString()}',
+                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: f.due > 0 ? const Color(0xFFdc2626) : const Color(0xFF16a34a)),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 4),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFFdc2626)),
+                                          onPressed: () => _handleDelete(f.id),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       bottomSheet: _dialogOpen
           ? Container(
               color: Colors.white,
